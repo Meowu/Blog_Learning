@@ -10,6 +10,13 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+const mongoose = require('mongoose')
+const mongoDB = 'mongodb:127.0.0.1:27017/blog'
+mongoose.connect(mongoDB, {
+  useMongoClient: true
+})
+const db = mongoose.connection()
+db.on('error', console.error.bind(console, 'MongoDB connet error.'))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
