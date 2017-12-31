@@ -30,18 +30,15 @@ const ArticleSchema = new Schema({
   category: String,
   status: {
     type: Number,
-    default: 0
+    default: 1
   },
-  diableComment: {
+  disableComment: {
     type: Boolean,
     default: false
   },
   summary: String
 }, {
-  timestamps: {
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
-  }
+  timestamps: true
 })
 
 module.exports = new mongoose.model('Article', ArticleSchema)

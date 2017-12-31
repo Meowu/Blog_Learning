@@ -7,5 +7,8 @@ const CommentSchema = new Schema({
   email: {type: String, required: true},
   site: {type: String},
   content: {type: String, required: true, min: 6, max: 500},
-  ups: {type: Number, default: 0}
+  ups: {type: Number, default: 0},
+  replyies: {type: Number, default: 0}
 })
+
+module.exports = mongoose.model('Comment', CommentSchema)
