@@ -11,7 +11,7 @@ var users = require('./routes/users');
 
 var app = express();
 const mongoose = require('mongoose')
-const mongoDB = 'mongodb:127.0.0.1:27017/blog'
+const mongoDB = 'mongodb://127.0.0.1:27017/blog'
 mongoose.connect(mongoDB, {
   useMongoClient: true
 })

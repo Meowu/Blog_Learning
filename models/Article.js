@@ -8,9 +8,12 @@ const ArticleSchema = new Schema({
     required: true,
     max: 60
   },
-  comments: {
-    type: Array
-  },
+  comments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Comment'
+    }
+  ],
   page_views: {
     type: Number,
     default: 0
@@ -24,10 +27,12 @@ const ArticleSchema = new Schema({
   content: {
     type: String
   },
-  tags: {
-    type: Array
-  },
-  category: String,
+  tags: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Tag'
+    }
+  ],
   status: {
     type: Number,
     default: 1
@@ -36,9 +41,8 @@ const ArticleSchema = new Schema({
     type: Boolean,
     default: false
   },
-  summary: String
-}, {
-  timestamps: true
-})
+  summary: String,
+  options: Schema.Types.Mixed
+}, {timestamps: true})
 
 module.exports = new mongoose.model('Article', ArticleSchema)
