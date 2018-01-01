@@ -8,6 +8,7 @@ var stylus = require('stylus');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+const admin = require('./routes/AdminRouter')
 
 var app = express();
 const mongoose = require('mongoose')
@@ -15,7 +16,7 @@ const mongoDB = 'mongodb://127.0.0.1:27017/blog'
 mongoose.connect(mongoDB, {
   useMongoClient: true
 })
-const db = mongoose.connection()
+const db = mongoose.connection
 db.on('error', console.error.bind(console, 'MongoDB connet error.'))
 
 // view engine setup
@@ -33,6 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/api/v1/admin', admin)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

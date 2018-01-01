@@ -1,5 +1,3 @@
-import {normalize} from 'path';
-
 const Admin = require('../models/Admin')
 const {
   isEmpty,
@@ -41,7 +39,8 @@ exports.login = (req, res, next) => {
 
 exports.signup = (req, res, next) => {
   const {username, email, password, password_again} = req.body
-  if (isEmpty(username)) {
+  console.log(isEmail(email));
+  if (!username || isEmpty(username)) {
     res.json({code: 0, msg: '用户名不能为空'})
   } else if (isEmpty(email)) {
     res.json({code: 0, msg: '邮箱不能为空'})
@@ -53,6 +52,8 @@ exports.signup = (req, res, next) => {
     res.json({code: 0, msg: '两次输入的密码不一致，请确认后再输入'})
   } else if (!isAlphanumeric(username)) {
     res.json({code: 0, msg: '用户名只能包含字母数字'})
+  } else if (!isEmail(email)) {
+    res.json({code:0, msg: '请输入合法的邮箱。'})
   } else {
     Admin
       .findOne({
@@ -61,7 +62,7 @@ exports.signup = (req, res, next) => {
         if (err) 
           return next(err)
         if (result) {
-          res.json({code: 0, msg: '邮箱已经被使用'})
+          res.json({code: 0, msg: '邮箱已经被占用'})
         } else {
           const newAdmin = new Admin({username: trim(username), email: normalizeEmail(email), password: trim(password)})
           newAdmin.save(function (err, result) {
