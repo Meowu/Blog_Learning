@@ -19,7 +19,7 @@ exports.login = (req, res, next) => {
   }
   Admin.findOne({
     email: normalizeEmail(email)
-  }, (err, data) => {
+  }, 'username email createdAt updatedAt', (err, data) => { // selecting username and email fields.
     if (err) { // todo: query by email or username
       return next(err)
     }
