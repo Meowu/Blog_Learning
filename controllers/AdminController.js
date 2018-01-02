@@ -19,7 +19,7 @@ exports.login = (req, res, next) => {
   }
   Admin.findOne({
     email: normalizeEmail(email)
-  }, 'username email createdAt updatedAt', (err, data) => { // selecting username and email fields.
+  }, (err, data) => { // selecting username and email fields.
     if (err) { // todo: query by email or username
       return next(err)
     }
@@ -31,7 +31,7 @@ exports.login = (req, res, next) => {
       } else {
         res
           .status(200)
-          .json({code: 1, msg: '查找成功', data: data})
+          .json({code: 1, msg: '登录成功', data: data})
       }
     }
   })
@@ -76,4 +76,24 @@ exports.signup = (req, res, next) => {
         }
       })
   }
+}
+
+exports.changePassword = (req, res, next) => {
+  const { email, password, new_password } = req.body
+  Admin.findOne({email: email}, function (err, result) {
+    if (err) return next(err)
+    if(!result) {
+      res.json({code: 0, msg: '该用户不存在。'})
+    }
+    if (result) {
+      if (!equals(password, result.password)) {
+        res.json({code: 0, msg: '旧密码错误。'})
+      } else {
+        Admin.update({email: email}, { $set: {password: new_password}}, function (err, result) {
+          if (err) return next(err)
+          res.json({code: 1, msg: '更改成功。'})
+        })
+      }
+    }
+  })
 }
