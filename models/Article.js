@@ -49,4 +49,4 @@ const ArticleSchema = new Schema({
   options: Schema.Types.Mixed
 }, {timestamps: true})
 
-module.exports = new mongoose.model('Article', ArticleSchema)
+module.exports = mongoose.model('Article', ArticleSchema)

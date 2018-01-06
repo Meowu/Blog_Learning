@@ -9,6 +9,7 @@ var stylus = require('stylus');
 var index = require('./routes/index');
 var users = require('./routes/users');
 const admin = require('./routes/AdminRouter')
+const tag = require('./routes/TagRouter')
 
 var app = express();
 const mongoose = require('mongoose')
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 app.use('/api/v1/admin', admin)
+app.use('/api/v1/tags', tag)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
