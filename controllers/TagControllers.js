@@ -11,3 +11,11 @@ exports.getTagsCount = (req, res ,next) => {
     })
   })
 }
+
+exports.getTag = (req, res, next) => {
+  const { id } = req.params.tag
+  Tag.findOne({_id: trim(id)}, (err, result) => {
+    if (err) return next(err)
+    res.json({})
+  })
+}

@@ -8,6 +8,10 @@ const ArticleSchema = new Schema({
     required: true,
     max: 60
   },
+  path: {
+    type: String,
+    max: 100,
+  },
   comments: [
     {
       type: Schema.Types.ObjectId,
@@ -24,7 +28,7 @@ const ArticleSchema = new Schema({
   markdown: {
     type: String
   },
-  content: {
+  html_text: {
     type: String
   },
   tags: [
