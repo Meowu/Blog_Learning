@@ -21,7 +21,7 @@ exports.getArticles = (req, res, next) => {
       if (err) return next(err)
       res.status(200).json({
         code: 0,
-        msg: '查找成功'，
+        msg: '查找成功',
         data: result
       })
     })
