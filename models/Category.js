@@ -11,4 +11,4 @@ categorySchema.virtual('counts').get(function() {
   return this.articles.length
 })
 
-module.exports = new mongoose.Model('Category', categorySchema)
+module.exports = mongoose.model('Category', categorySchema)
