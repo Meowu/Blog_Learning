@@ -8,7 +8,7 @@ const ArticleSchema = new Schema({
     required: true,
     max: 60
   },
-  path: {
+  path: {  // seo optimize，used as url path of the article.
     type: String,
     max: 100,
   },
@@ -22,13 +22,17 @@ const ArticleSchema = new Schema({
     type: Number,
     default: 0
   },
+  likes: {
+    type: Number,
+    default: 0
+  },
   cover: {
     type: String
   },
   markdown: {
     type: String
   },
-  html_text: {
+  html_string: {
     type: String
   },
   tags: [
@@ -39,12 +43,13 @@ const ArticleSchema = new Schema({
   ],
   status: {
     type: Number,
-    default: 1
+    default: 1  // 0 - 禁用，1 - 启用
   },
   disableComment: {
     type: Boolean,
     default: false
   },
+  category: {type: Schema.Types.ObjectId, ref: 'Category'},
   summary: String,
   options: Schema.Types.Mixed
 }, {timestamps: true})

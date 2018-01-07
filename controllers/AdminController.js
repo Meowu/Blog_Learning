@@ -8,6 +8,7 @@ const {
   isEmail,
   normalizeEmail
 } = require('validator')
+const { return0, return1, return2 } = require('./_response')
 
 exports.login = (req, res, next) => {
   const {email, password} = req.body
@@ -24,10 +25,10 @@ exports.login = (req, res, next) => {
       return next(err)
     }
     if (!data) {
-      res.json({code: 0, msg: '该用户不存在'})
+      return1('用户不存在', res)
     } else {
       if (!equals(password, data.password)) {
-        res.json({code: 0, msg: '密码错误'})
+        return1('密码错误', res)
       } else {
         res
           .status(200)
@@ -41,19 +42,19 @@ exports.signup = (req, res, next) => {
   const {username, email, password, password_again} = req.body
   console.log(isEmail(email));
   if (!username || isEmpty(username)) {
-    res.json({code: 0, msg: '用户名不能为空'})
+    return1('用户名不能为空', res)
   } else if (isEmpty(email)) {
-    res.json({code: 0, msg: '邮箱不能为空'})
+    return1('邮箱不能为空', res)
   } else if (isEmpty(password)) {
-    res.json({code: 0, msg: '密码不能为空'})
+    return1('密码不能为空', res)
   } else if (isEmpty(password_again)) {
-    res.json({code: 0, msg: '请再次输入密码'})
+    return1('请再次输入密码', res)
   } else if (!equals(password, password_again)) {
-    res.json({code: 0, msg: '两次输入的密码不一致，请确认后再输入'})
+    return1('两次输入的密码不一致，请确认后再输入', res)
   } else if (!isAlphanumeric(username)) {
-    res.json({code: 0, msg: '用户名只能包含字母数字'})
+    return1('用户名只能包含字母数字', res)
   } else if (!isEmail(email)) {
-    res.json({code:0, msg: '请输入合法的邮箱。'})
+    return1('请输入合法的邮箱。', res)
   } else {
     Admin
       .findOne({
@@ -62,7 +63,7 @@ exports.signup = (req, res, next) => {
         if (err) 
           return next(err)
         if (result) {
-          res.json({code: 0, msg: '邮箱已经被占用'})
+          return1('邮箱已经被占用', res)
         } else {
           const newAdmin = new Admin({username: trim(username), email: normalizeEmail(email), password: trim(password)})
           newAdmin.save(function (err, result) {
@@ -87,7 +88,7 @@ exports.changePassword = (req, res, next) => {
     }
     if (result) {
       if (!equals(password, result.password)) {
-        res.json({code: 0, msg: '旧密码错误。'})
+        return1('旧密码错误', res)
       } else {
         Admin.update({email: email}, { $set: {password: new_password}}, function (err, result) {
           if (err) return next(err)

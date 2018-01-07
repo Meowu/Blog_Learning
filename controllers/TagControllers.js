@@ -1,5 +1,6 @@
 const Tag = require('../models/Tag')
 const {trim, escape} = require('validator')
+const { return0, return1, return2, return3 } = require('./_response')
 
 exports.getTagsCount = (req, res, next) => {
   console.log('query...');
@@ -15,7 +16,7 @@ exports.changeTag = (req, res, next) => {
   let id = req.params.id
   id = trim(id)
   if (!id) {
-    res.json({msg: 'id不能为空'})
+    return1('id不能为空', res)
   }
   switch (req.method) {
     case 'GET':
@@ -27,10 +28,7 @@ exports.changeTag = (req, res, next) => {
           if (err) 
             return next(err)
           if (!result) {
-            res.json({
-              code: 1,
-              msg: 'id不存在'
-            })
+            return2('id不存在', res)
           }
           res.json({code: 0, msg: '查找成功', data: result})
         }) 
@@ -38,18 +36,12 @@ exports.changeTag = (req, res, next) => {
     case 'PUT':
       const name = escape(trim(req.body.name))
       if (!name) {
-        res.json({
-          code: 1,
-          msg: 'name不能为空'
-        })
+        return1('name 不能为空', res)
       }
       Tag.findByIdAndUpdate(id, {'$set': {name: name}}, {'new': true}, (err, result) => {
         if (err) return next(err)
         if (!result) {
-          res.json({
-            code: 1,
-            msg: 'id不存在'
-          })
+            return2('id不存在', res)
         }
         res.json({
           code: 0,
@@ -62,11 +54,8 @@ exports.changeTag = (req, res, next) => {
         Tag.findByIdAndUpdate(id, (err, result) => {
           if (err) return next(err)
           if (!result) {
-            res.json({
-              code: 1,
-              msg: 'id不存在'
-            })
-          }
+            return2('id不存在', res)
+        }
           res.json({
             code: 0,
             msg: '删除成功'
@@ -82,23 +71,23 @@ exports.addTag = (req, res, next) => {
   console.log(req.body);
   const newname = escape(trim(name))
   if (!name) {
-    res.json({code: 0, msg: '缺少标签名'})
+    return1('缺少标签名', res)
   }
   Tag.findOne({
     name: newname
   }, (err, result) => {
     if (err) 
-      return next(result) // 如果找不到 result 返回 null。
+      return return3(res) // 如果找不到 result 返回 null。
     if (result) {
-      res.json({code: 0, msg: '标签已存在'})
+      return1('标签已存在', res)
     } else {
       const tag = new Tag({name: newname, articles: []})
       tag.toJSON({virtuals: true})
       tag.save(function (err, result) {
         if (err) 
-          return next(err)
+          return return3(res)
         console.log(result.counts);
-        res.json({code: 1, msg: '添加成功', data: result})
+        res.json({code: 0, msg: '添加成功', data: result})
       })
     }
   })
