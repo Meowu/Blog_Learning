@@ -51,7 +51,7 @@ exports.changeTag = (req, res, next) => {
       })
       break;
       case 'DELETE':
-        Tag.findByIdAndUpdate(id, (err, result) => {
+        Tag.findByIdAndRemove(id, (err, result) => {
           if (err) return next(err)
           if (!result) {
             return2('id不存在', res)
