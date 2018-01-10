@@ -45,8 +45,8 @@ exports.getArticles = (req, res, next) => {
       })
     })
   } else {  // The second params is projection object.
-    Article.find({}, projection, {skip: (page - 1)*page_size, limit: page_size}, function(err, result) {
-      if (err) return return3(res)
+    Article.find({}, projection, {skip: (page - 1)*page_size, limit: page_size}).populate('category', '_id name').exec(function(err, result) {
+      if (err) return return3(res) // 查找文章的时候获取其标签和分类。
       res.status(200).json({
         code: 0,
         msg: '查找成功',
@@ -106,4 +106,24 @@ exports.addArticles = (req, res, next) => {
       return0({}, res)
     })
   })
+}
+
+exports.selectArticle = (req, res, next) => {
+  const method = req.method
+  if (method === 'GET') {
+    const id = req.params.id
+    if (!id) {
+      return1('id不合法', res)
+    }
+    Article.findById(escape(id)).populate('tags').populate('category', '_id name').exec(function(err,result) {
+      if (err) {
+        return3(res)
+      }
+      if (!result) {
+        return2('id不存在',res)
+      } else {
+        return0(result, res)
+      }
+    })
+  }
 }

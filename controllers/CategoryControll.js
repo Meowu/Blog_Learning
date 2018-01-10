@@ -45,7 +45,7 @@ exports.deleteCategory = (req, res, next) => {
 }
 
 exports.getCategories = (req, res, next) => {
-  Category.find({}, function(err, result) {
+  Category.find({}, '_id name counts', function(err, result) {
     if (err) return3(res)
     return0(result, res)
   })
@@ -61,6 +61,7 @@ exports.getCategoryArticles = (req, res, next) => {
     if (!result) {
       return1('id不存在', res)
     } else {
+      console.log(result);
       return0(result, res)
     }
   })
