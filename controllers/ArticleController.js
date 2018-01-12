@@ -81,9 +81,7 @@ exports.addArticles = (req, res, next) => {
     }
   });
   marked(markdown, (err, content) => {
-    console.log(content);
     if (err) {
-      console.log("render...");
       return3(res)
     }
     const newArticle = new Article({
@@ -98,9 +96,7 @@ exports.addArticles = (req, res, next) => {
     // summary && (newArticle.summary = summary)
     // cover && (newArticle.cover = summary)
     newArticle.save(function (err) {
-      console.log("saving...");
       if (err) { 
-        console.log(err);
         return3(res) 
       }
       return0({}, res)
@@ -115,7 +111,7 @@ exports.selectArticle = (req, res, next) => {
     if (!id) {
       return1('id不合法', res)
     }
-    Article.findById(escape(id)).populate('tags').populate('category', '_id name').exec(function(err,result) {
+    Article.findById(escape(id), '-markdown').populate('tags', '_id name').populate('category', '_id name').exec(function(err,result) {
       if (err) {
         return3(res)
       }
