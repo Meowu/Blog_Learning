@@ -17,35 +17,29 @@ const {
 } = require('validator')
 
 exports.getArticles = (req, res, next) => {
-  let { page, page_size, tag_name, category, rendermd } = req.query
+  let { page, page_size, tag, category, rendermd } = req.query
   page = Number(page) || 1
   page_size = Number(page_size) || 10
   const projection = !!rendermd ? '-html_string' : '-markdown'
   console.log(projection);
-  if (tag_name) {
-    tag_name = escape(trim(tag_name))
-    Tag.find({name: tag_name}).populate('Article',projection, {skip: (page - 1)*page_size, limit: page_size}).exec(function(err, result) {
+  if (tag) {
+    tag = escape(trim(tag))
+    console.log(tag); // 这种 $in 的用法表示查找条件为：文章的 tags 数组中包含至少一个 tag 所在数组中的字段，这种方法便于通过多个 tag 来筛选。当然直接 {tags: tag} 也可以查找到的。
+    Article.find({tags: {$in: [tag]}}, projection, {skip: (page - 1)*page_size, limit: page_size}).populate('category', '_id name').populate('tags', '_id name').exec(function(err, result) {
       if (err) return return3(res)
-      res.status(200).json({
-        code: 0,
-        msg: '查找成功',
-        data: result
-      })
+      console.log(result);
+      return0(result, res)
     })
   } else if (category) {
     category = escape(trim(category))
 
     // populate 的第二个参数是 [select]<Object, String>
-    Category.find({name: category}).populate('Article', projection, {skip: (page - 1) *page_size, limit: page_size}).exec(function(err, result) {
+    Article.find({category: category}, projection, {skip: (page - 1) *page_size, limit: page_size}).populate('category', '_id name').populate('tags', '_id name').exec(function(err, result) {
       if (err) return return3(res)
-      res.status(200).json({
-        code: 0,
-        msg: '查找成功',
-        data: result
-      })
+      return0(result, res)
     })
   } else {  // The second params is projection object.
-    Article.find({}, projection, {skip: (page - 1)*page_size, limit: page_size}).populate('category', '_id name').exec(function(err, result) {
+    Article.find({}, projection, {skip: (page - 1)*page_size, limit: page_size}).populate('category', '_id name').populate('tags', '_id name').exec(function(err, result) {
       if (err) return return3(res) // 查找文章的时候获取其标签和分类。
       res.status(200).json({
         code: 0,
@@ -66,7 +60,8 @@ exports.addArticles = (req, res, next) => {
   cover && (cover = escape(trim(cover)))
   category && (category = escape(trim(category)))
   markdown = trim(markdown)
-  tags = tags || []
+  tags = typeof tags === 'string' ? tags.split(',') : []
+  console.log(tags);
   if (!title) {
     return1('标题不能为空', res)
   } else if (!path) {
@@ -92,6 +87,7 @@ exports.addArticles = (req, res, next) => {
       html_string: content,
       tags: tags
     })
+    console.log(newArticle);
     // tags.length && (newArticle.tags = tags)
     // summary && (newArticle.summary = summary)
     // cover && (newArticle.cover = summary)
