@@ -3,7 +3,6 @@ const {trim, escape} = require('validator')
 const { return0, return1, return2, return3 } = require('./_response')
 
 exports.getTagsCount = (req, res, next) => {
-  console.log('query...');
   Tag.find({}, '_id name counts', (err, result) => {
     // const data = result.toJSON({virtuals: true})
     if (err) 

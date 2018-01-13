@@ -26,9 +26,7 @@ const ArticleSchema = new Schema({
     type: Number,
     default: 0
   },
-  cover: {
-    type: String
-  },
+  cover: String,
   markdown: {
     type: String
   },
