@@ -9,8 +9,9 @@ const CommentSchema = new Schema({
   avatar: String,
   article: {type: Schema.Types.ObjectId, ref: 'Article'},
   content: {type: String, required: true, min: 6, max: 800},
+  html_string: String,
   ups: {type: Number, default: 0},
-  replyies: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
+  replies: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
   options: Schema.Types.Mixed
 })
 

@@ -12,6 +12,7 @@ const admin = require('./routes/AdminRouter')
 const tag = require('./routes/TagRouter')
 const article = require('./routes/ArticleRouter')
 const category = require('./routes/CategoryRouter')
+const comment = require('./routes/CommentRouter')
 
 var app = express();
 const mongoose = require('mongoose')
@@ -41,6 +42,7 @@ app.use('/api/v1/admin', admin)
 app.use('/api/v1/tags', tag)
 app.use('/api/v1/articles', article)
 app.use('/api/v1/categories', category)
+app.use('/api/v1/comments', comment)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
