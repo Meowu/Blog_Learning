@@ -53,7 +53,6 @@ exports.addComments = (req, res, next) => {
       html_string: contents,
     })
     newComment.save(function (err, result) {
-      console.log(result);
       err && return3(res)
       if (commentId) { // { $push: { <filed1>: <value1>, ...}} 如果 field1 不存在将会创建一个 field1 字段，其值是包含 value1 的数组。
         Comment.findByIdAndUpdate(commentId, {$push: {replies: result._id}},  function(err, result) { // 必须指定 options: { new: true } result才会返回更新后的文档。
@@ -73,8 +72,32 @@ exports.findComments = (req, res, next) => {
   if (!id) {
     return1('id 不能为空', res)
   }
-  Comment.find({article: id}).populate('replies').exec(function(err, result) {
-    err && return3(res)
-    return0(result, res)
-  })
+  if (req.method === 'GET') {
+    Comment.find({article: id}, '_id name site avatar html_string ups replies').populate('replies', '_id name site avatar html_string ups replies').exec(function(err, result) {
+      err && return3(res)
+      return0(result, res)
+    })
+  } else if (req.method === 'DELETE') {
+    Comment.findByIdAndRemove(id, function(err, result) {
+      err && return3(res)
+      if (!result) {
+        return1('id 不存在', res)
+      } else {
+        const { replies } = result
+        console.log(replies);
+        if (replies.length) {
+          // didnot remove _id from those comments referencing this comment yet.
+          Comment.deleteMany({_id: {$in: replies}}, function(err) {
+            err && return1('评论删除成功，子评论删除失败。', res)
+            // return0({}, res)
+          })
+        }
+        return0({}, res)
+      }
+    })
+  }
 }
+
+// exports.removeComments = (req, res, next) => {
+//   const id = req.params = 
+// }
