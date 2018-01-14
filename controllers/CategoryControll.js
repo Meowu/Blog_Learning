@@ -40,6 +40,7 @@ exports.deleteCategory = (req, res, next) => {
     }
   }, function (err, result) {
     if (err) {
+      console.log(err); // 这里已经对错误进行处理，但是如果传入错误的 ObjectId，依然导致程序崩溃？？
       return1('id不合法',res)
     }
     if (!result.category) {
