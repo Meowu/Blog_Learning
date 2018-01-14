@@ -1,9 +1,10 @@
 const Article = require('../models/Article')
 const Category = require('../models/Category')
 const Tag = require('../models/Tag')
+const Comment = require('../models/Comment')
 // const hljs = require('highlight.js')
 const marked = require('marked')
-
+const async = require('async')
 const {return0, return1, return2, return3} = require('./_response')
 
 const {
@@ -90,8 +91,12 @@ exports.addArticles = (req, res, next) => {
   } = body
   title = escape(trim(title))
   path = escape(trim(path))
-  summary = typeof summary === 'string' ? escape(trim(summary)) : ''
-  cover = typeof cover === 'string' ? escape(trim(cover)) : ''
+  summary = typeof summary === 'string'
+    ? escape(trim(summary))
+    : ''
+  cover = typeof cover === 'string'
+    ? escape(trim(cover))
+    : ''
   category && (category = escape(trim(category)))
   markdown = trim(markdown)
   tags = typeof tags === 'string'
@@ -124,7 +129,7 @@ exports.addArticles = (req, res, next) => {
       html_string: content,
       tags: tags
     })
-    summary && (newArticle.summary = summary) 
+    summary && (newArticle.summary = summary)
     cover && (newArticle.cover = cover)
     newArticle.save(function (err) {
       if (err) {
@@ -146,82 +151,96 @@ exports.selectArticle = (req, res, next) => {
     const render = req.query.rendermd
       ? true
       : false
-    Article
-      .findById(escape(id), render ? '-html_string' : '-markdown').populate('tags', '_id name')
-      .populate('category', '_id name').exec(function (err, result) {
-        if (err) {
-          return3(res)
-        } else if (!result) {
-          return2('id不存在', res)
-        } else {
-            return0(result, res)
-          }
-      })
-    } else if (method === 'PUT') {
-      const body = req.body
-      let {
-        title,
-        path,
-        summary,
-        cover,
-        markdown,
-        category,
-        tags
-      } = body
-      title = escape(trim(title))
-      path = escape(trim(path))
-      summary = typeof summary === 'string' ? escape(trim(summary)) : ''
-      cover = typeof cover === 'string' ? escape(trim(cover)) : ''
-      category && (category = escape(trim(category)))
-      markdown = trim(markdown)
-      tags = typeof tags === 'string'
-        ? tags.split(',')
-        : []
-      if (!title) {
-        return1('标题不能为空', res)
-      } else if (!path) {
-        return1('path 不能为空', res)
-      } else if (!markdown) {
-        return1('内容不能为空', res)
+    async.parallel({
+      article: function (cb) {
+        Article.findById(escape(id), render
+            ? '-html_string'
+            : '-markdown')
+          .populate('tags', '_id name')
+          .populate('category', '_id name')
+          .exec(cb)
+      },
+      comments: function (cb) {
+        Comment
+          .find({article: id})
+          .populate('replies')
+          .exec(cb)
       }
-      // const
-      marked.setOptions({
-        highlight: function (code) {
-          return require('highlight.js')
-            .highlightAuto(code)
-            .value;
-        }
-      });
-      marked(markdown, (err, content) => {
-        if (err) {
-          return3(res)
-        }
-        const newArticle = new Article({
-          title: title,
-          path: path,
-          category: category,
-          markdown: markdown,
-          html_string: content,
-          tags: tags,
-          summary: summary,
-          cover: cover,
-          _id: id
-        })
-        Article.findByIdAndUpdate(id, newArticle, function(err, result) {
-          err && return3(res)
-          return0({}, res)
-        })
+    }, function(err, result) {
+      err && return3(res)
+      const articleContent = result.article
+      articleContent.comments = result.comments 
+      return0(articleContent, res)
+    })
+  } else if (method === 'PUT') {
+    const body = req.body
+    let {
+      title,
+      path,
+      summary,
+      cover,
+      markdown,
+      category,
+      tags
+    } = body
+    title = escape(trim(title))
+    path = escape(trim(path))
+    summary = typeof summary === 'string'
+      ? escape(trim(summary))
+      : ''
+    cover = typeof cover === 'string'
+      ? escape(trim(cover))
+      : ''
+    category && (category = escape(trim(category)))
+    markdown = trim(markdown)
+    tags = typeof tags === 'string'
+      ? tags.split(',')
+      : []
+    if (!title) {
+      return1('标题不能为空', res)
+    } else if (!path) {
+      return1('path 不能为空', res)
+    } else if (!markdown) {
+      return1('内容不能为空', res)
+    }
+    // const
+    marked.setOptions({
+      highlight: function (code) {
+        return require('highlight.js')
+          .highlightAuto(code)
+          .value;
+      }
+    });
+    marked(markdown, (err, content) => {
+      if (err) {
+        return3(res)
+      }
+      const newArticle = new Article({
+        title: title,
+        path: path,
+        category: category,
+        markdown: markdown,
+        html_string: content,
+        tags: tags,
+        summary: summary,
+        cover: cover,
+        _id: id
+      })
+      Article.findByIdAndUpdate(id, newArticle, function (err, result) {
+        err && return3(res)
+        return0({}, res)
+      })
     })
   } else if (method === 'DELETE') {
-    Article.findByIdAndRemove(id, function(err, result) {
-      err && return3(res) // 返回 result 是找到的文档
-      !result && return1('id 不存在', res)
-      return0({}, res)
-    })
+    Article
+      .findByIdAndRemove(id, function (err, result) {
+        err && return3(res) // 返回 result 是找到的文档
+        !result && return1('id 不存在', res)
+        return0({}, res)
+      })
   } else {
-    res.status(405).json({
-      code: 1,
-      msg: 'Method rejected.'
-    })
+    res
+      .status(405)
+      .json({code: 1, msg: 'Method rejected.'})
   }
 }
