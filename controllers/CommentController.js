@@ -75,6 +75,7 @@ exports.findComments = (req, res, next) => {
   if (req.method === 'GET') {
     Comment.find({article: id}, '_id name site avatar html_string ups replies').populate('replies', '_id name site avatar html_string ups replies').exec(function(err, result) {
       err && return3(res)
+      console.log(result[0].counts);
       return0(result, res)
     })
   } else if (req.method === 'DELETE') {
@@ -87,10 +88,11 @@ exports.findComments = (req, res, next) => {
         console.log(replies);
         if (replies.length) {
           // didnot remove _id from those comments referencing this comment yet.
-          Comment.deleteMany({_id: {$in: replies}}, function(err) {
-            err && return1('评论删除成功，子评论删除失败。', res)
-            // return0({}, res)
-          })
+          // Comment.deleteMany({_id: {$in: replies}}, function(err) {
+          //   err && return1('评论删除成功，子评论删除失败。', res)
+          //   // return0({}, res)
+          // })
+          Comment.deleteMany({_id: {$in: replies}}).exec()
         }
         return0({}, res)
       }

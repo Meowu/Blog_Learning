@@ -169,6 +169,8 @@ exports.selectArticle = (req, res, next) => {
     }, function(err, result) {
       err && return3(res)
       const articleContent = result.article
+      articleContent.page_views++
+      Article.findByIdAndUpdate(id, {$inc: {page_views: 1}}).then(() => {}).catch(e => {throw Error(e)})
       articleContent.comments = result.comments 
       return0(articleContent, res)
     })
@@ -242,5 +244,17 @@ exports.selectArticle = (req, res, next) => {
     res
       .status(405)
       .json({code: 1, msg: 'Method rejected.'})
+  }
+}
+
+exports.likeArticles = (req, res, next) => {
+  const id = req.params.id 
+  if (!trim(id)) {
+    return1('id 不能为空', res)
+  } else {
+    Article.findByIdAndUpdate(escape(id), {$inc: {likes: 1}}, function(err, result) {
+      err && return3(res)
+      return0({}, res)
+    })
   }
 }
