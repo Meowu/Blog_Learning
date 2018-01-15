@@ -42,7 +42,8 @@ exports.getArticles = (req, res, next) => {
       .exec(function (err, result) {
         if (err) 
           return return3(res)
-        return0(result, res)
+        const data = result.map(article => article.info)
+        return0(data, res)
       })
   } else if (category) {
     category = escape(trim(category))
@@ -54,12 +55,13 @@ exports.getArticles = (req, res, next) => {
       skip: (page - 1) * page_size,
         limit: page_size
       })
-      // .populate('category', '_id name')
-      // .populate('tags', '_id name')
+      .populate('category', '_id name')
+      .populate('tags', '_id name')
       .exec(function (err, result) {
         if (err) 
           return return3(res)
-        return0(result, res)
+        const data = result.map(article => article.info)
+        return0(data, res)
       })
   } else { // The second params is projection object.
     Article.find({}, projection, {
