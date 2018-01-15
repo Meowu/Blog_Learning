@@ -52,4 +52,19 @@ const ArticleSchema = new Schema({
   options: Schema.Types.Mixed
 }, {timestamps: true})
 
+ArticleSchema.virtual('info').get(function () {
+  return {
+    id: this._id,
+    title: this.title,
+    path: this.path,
+    page_views: this.page_views,
+    cover: this.cover,
+    summary: this.summary,
+    likes: this.likes,
+    tags: this.tags,
+    category: this.category,
+    comments_count: this.comments.length
+  }
+})
+
 module.exports = mongoose.model('Article', ArticleSchema)

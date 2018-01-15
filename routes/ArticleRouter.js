@@ -1,10 +1,13 @@
 const router = require('express').Router()
 
-const { addArticles, getArticles, selectArticle, likeArticles } = require('../controllers/ArticleController')
-
+const { addArticles, getArticles, selectArticle, likeArticles, getOneArticle } = require('../controllers/ArticleController')
+// cms
 router.post('/new', addArticles)
 router.get('/', getArticles)
-router.put('/:id/like', likeArticles)
-router.all('/:id', selectArticle)
+router.all('/cms/:id', selectArticle)
+
+// front 
+router.put('/:id', likeArticles)
+router.get('/:id', getOneArticle)
 
 module.exports = router
