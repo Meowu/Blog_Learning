@@ -18,11 +18,12 @@ exports.login = (req, res, next) => {
       .status(401)
       .json({code: 0, msg: err})
   }
+  console.log(email, password);
   Admin.findOne({
     email: normalizeEmail(email)
   }, (err, data) => { // selecting username and email fields.
     if (err) { // todo: query by email or username
-      return next(err)
+      return3(res)
     }
     if (!data) {
       return1('用户不存在', res)
@@ -30,9 +31,7 @@ exports.login = (req, res, next) => {
       if (!equals(password, data.password)) {
         return1('密码错误', res)
       } else {
-        res
-          .status(200)
-          .json({code: 1, msg: '登录成功', data: data})
+        return return0(data, res)
       }
     }
   })
