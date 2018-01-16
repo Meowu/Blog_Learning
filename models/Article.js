@@ -63,7 +63,8 @@ ArticleSchema.virtual('info').get(function () {
     likes: this.likes,
     tags: this.tags,
     category: this.category,
-    comments_count: this.comments.length
+    comments_count: this.comments.length,
+    post_date: this.createdAt
   }
 })
 

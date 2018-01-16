@@ -105,11 +105,11 @@ exports.addArticles = (req, res, next) => {
     ? tags.split(',')
     : []
   if (!title) {
-    return1('标题不能为空', res)
+    return return1('标题不能为空', res)
   } else if (!path) {
-    return1('path 不能为空', res)
+    return return1('path 不能为空', res)
   } else if (!markdown) {
-    return1('内容不能为空', res)
+    return return1('内容不能为空', res)
   }
   // const
   marked.setOptions({
@@ -121,8 +121,9 @@ exports.addArticles = (req, res, next) => {
   });
   marked(markdown, (err, content) => {
     if (err) {
-      return3(res)
+      return return3(res)
     }
+    console.log(content);
     const newArticle = new Article({
       title: title,
       path: path,
@@ -133,11 +134,13 @@ exports.addArticles = (req, res, next) => {
     })
     summary && (newArticle.summary = summary)
     cover && (newArticle.cover = cover)
+    console.log(newArticle);
     newArticle.save(function (err) {
       if (err) {
-        return3(res)
+        console.log(err);
+        return return3(res)
       }
-      return0({}, res)
+      return return0({}, res)
     })
   })
 }

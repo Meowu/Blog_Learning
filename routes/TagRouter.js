@@ -1,8 +1,8 @@
 const router = require('express').Router()
 
-const { changeTag, getTagsCount, addTag } = require('../controllers/TagControllers')
+const { changeTag, getTags, addTag } = require('../controllers/TagControllers')
 
-router.get('/counts', getTagsCount)
+router.get('/', getTags)
 router.post('/new', addTag)
 router.all('/:id', changeTag)
 
