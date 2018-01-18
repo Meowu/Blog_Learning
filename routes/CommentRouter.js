@@ -4,6 +4,6 @@ const { addComments, findComments, upComments } = require('../controllers/Commen
 
 router.post('/new', addComments)
 router.put('/:id', upComments)
-router.all('/cms/:id', findComments)
+router.all('/cms/:id', findOneComments)
 
 module.exports = router

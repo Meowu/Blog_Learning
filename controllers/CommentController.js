@@ -102,27 +102,37 @@ exports.addComments = (req, res, next) => {
   })
 }
 
-// 后台删除评论、获取评论列表
 exports.findComments = (req, res, next) => {
+  let { start_date, end_date, article_name } = req.query
+  const 
+}
+
+// 后台删除评论、获取评论列表
+exports.findOneComments = (req, res, next) => {
   const id = req.params.id
   if (!id) {
-    return1('id 不能为空', res)
+    return return1('id 不能为空', res)
   }
   // 获取评论及其回复
   if (req.method === 'GET') {
-    let { start_date, end_date, article_name } = req.query
-    console.log(id);
+    // console.log(id);
     Comment
-      .findById(id, '_id name site avatar html_string ups replies')
-      .populate('replies', '_id name site avatar html_string ups replies')
+      .findById(id, '_id name site avatar content ups replies')
+      .populate('replies', '_id name site avatar content ups replies')
       .exec(function (err, result) {
-        console.log(result);
+        // console.log(result);
         if (err) {
           return return3(res)
         } else if (!result) {
           return return1('id 不存在', res)
         }
-        return return0(result, res)
+        // console.log(result.replies[0].info)
+        // console.log(result.replies.map(reply => reply.info));
+        // console.log(result.info.replies);
+        const data = result.info
+        data.replies = result.replies.map(reply => reply.info)
+        // result.info.replies = result.replies.map(reply => reply.info) // populate 是获取不到 virtuals 的？
+        return return0(data, res)
       })
   } else if (req.method === 'DELETE') {
     // 评论及其回复。
