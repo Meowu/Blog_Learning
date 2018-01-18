@@ -8,8 +8,8 @@ const CommentSchema = new Schema({
   site: String,
   avatar: String,
   article: {type: Schema.Types.ObjectId, ref: 'Article'},
-  content: {type: String, required: true, min: 6, max: 800},
-  html_string: String,
+  content: {type: String, required: true, min: 10, max: 1000},
+  // html_string: String,
   ups: {type: Number, default: 0},
   replies: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
   options: Schema.Types.Mixed
@@ -22,7 +22,7 @@ CommentSchema.virtual('info').get(function() {
     name: this.name,
     site: this.site,
     avatar: this.avatar,
-    content: this.html_string,
+    content: this.content,
     ups: this.ups,
     replies: this.replies
   }

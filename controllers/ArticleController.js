@@ -74,7 +74,7 @@ exports.getArticles = (req, res, next) => {
         if (err) 
           return return3(res) // 查找文章的时候获取其标签和分类。
         const data = result.map(article => article.info)
-        return0(data, res)
+        return return0(data, res)
       })
   }
 }
@@ -282,7 +282,11 @@ exports.getOneArticle = (req, res, next) => {
       if (err) {
         return return3(res)
       }
+      if (!result.article) {
+        return return1('id 不存在', res)
+      }
       const articleContent = result.article
+      console.log(result);
       articleContent.page_views++;
 
       Article.findByIdAndUpdate(id, {

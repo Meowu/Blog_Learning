@@ -76,8 +76,8 @@ exports.addComments = (req, res, next) => {
       avatar: avatar,
       site: site,
       article: articleId,
-      content: content,
-      html_string: contents
+      content: contents,
+      // html_string: contents
     })
     newComment.save(function (err, result) {
       err && return3(res)
@@ -102,6 +102,7 @@ exports.addComments = (req, res, next) => {
   })
 }
 
+// 后台删除评论、获取评论列表
 exports.findComments = (req, res, next) => {
   const id = req.params.id
   if (!id) {
@@ -109,6 +110,7 @@ exports.findComments = (req, res, next) => {
   }
   // 获取评论及其回复
   if (req.method === 'GET') {
+    let { start_date, end_date, article_name } = req.query
     console.log(id);
     Comment
       .findById(id, '_id name site avatar html_string ups replies')
@@ -120,7 +122,7 @@ exports.findComments = (req, res, next) => {
         } else if (!result) {
           return return1('id 不存在', res)
         }
-        return0(result, res)
+        return return0(result, res)
       })
   } else if (req.method === 'DELETE') {
     // 评论及其回复。
@@ -128,7 +130,7 @@ exports.findComments = (req, res, next) => {
       .findByIdAndRemove(id, function (err, result) {
         err && return3(res)
         if (!result) {
-          return1('id 不存在', res)
+          return return1('id 不存在', res)
         } else {
           const {replies} = result
           if (replies.length) {
@@ -143,7 +145,7 @@ exports.findComments = (req, res, next) => {
             })
               .exec()
           }
-          return0({}, res)
+          return return0({}, res)
         }
       })
   }
