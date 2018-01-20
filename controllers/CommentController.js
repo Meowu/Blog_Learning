@@ -102,13 +102,26 @@ exports.addComments = (req, res, next) => {
   })
 }
 
+// 后台获取筛选评论列表
 exports.findComments = (req, res, next) => {
-  let { start_date, end_date, article_name } = req.query
-  const 
+  let conditions = {}
+  let { start_date, end_date, query, keyword } = req.query
+  if (query === 1) {
+    conditions = {name: keyword, createdAt: {$gte: start_date, $lte: end_date}}
+  } else if (query === 2) {
+    conditions = {content: keyword, createdAt: {$gte: start_date, $lte: end_date}}
+  }
+  Comment.find(conditions).populate('article', '_id name').exec(function (err, result) {
+    if (err) {
+      return return3(res)
+    }
+    return0(result, res)
+  })
+  // const 
 }
 
 // 后台删除评论、获取评论列表
-exports.findOneComments = (req, res, next) => {
+exports.findOneComment = (req, res, next) => {
   const id = req.params.id
   if (!id) {
     return return1('id 不能为空', res)

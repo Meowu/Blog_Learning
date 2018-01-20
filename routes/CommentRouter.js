@@ -1,9 +1,10 @@
 const router = require('express').Router()
 
-const { addComments, findComments, upComments } = require('../controllers/CommentController')
+const { addComments, findComments, upComments, findOneComment } = require('../controllers/CommentController')
 
 router.post('/new', addComments)
 router.put('/:id', upComments)
-router.all('/cms/:id', findOneComments)
+router.get('/cms/all', findComments)
+router.all('/cms/:id', findOneComment)
 
 module.exports = router

@@ -13,7 +13,7 @@ const CommentSchema = new Schema({
   ups: {type: Number, default: 0},
   replies: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
   options: Schema.Types.Mixed
-})
+}, {timestamps: true})
 
 // Only non-virtual properties work as part of queries and for field selection. Since virtuals are not stored in MongoDB, you can't query with them.
 CommentSchema.virtual('info').get(function() {
