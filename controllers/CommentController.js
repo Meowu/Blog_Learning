@@ -102,15 +102,25 @@ exports.addComments = (req, res, next) => {
 
 // 后台获取筛选评论列表
 exports.findComments = (req, res, next) => {
-  let conditions = {}
-  // let { start_date, end_date, query, keyword } = req.query
-  // if (query === 1) {
-  //   conditions = {name: keyword, createdAt: {$gte: start_date, $lte: end_date}}
-  // } else if (query === 2) {
-  //   conditions = {content: keyword, createdAt: {$gte: start_date, $lte: end_date}}
-  // }
+  let conditions
+  let { start_date, end_date, query, keyword, page, page_size } = req.query
+  page = Number(page) || 1
+  page_size = Number(page_size) || 10
+  options = {
+    skip: (page - 1) * page_size,
+    limit: page_size
+  }
+  if (Object.is(Number(query), 1)) {
+    conditions = { name: { $regex: keyword, $options: 'is' } }
+    // conditions = {name: keyword, createdAt: {$gte: start_date, $lte: end_date}}
+  } else if (Object.is(Number(query), 2)) {
+    // $regex Provides regular expression capabilities for pattern matching strings in queries. 模糊查找，类似 sql 中的 like 。
+    conditions = { content: { $regex: keyword, $options: 'i'} }
+    // conditions = {content: keyword, createdAt: {$gte: start_date, $lte: end_date}}
+  }
   // condition = {}
-  Comment.find(conditions).populate('article', '_id title').exec(function (err, result) {
+  console.log(conditions);
+  Comment.find(conditions, null, options).populate('article', '_id title').exec(function (err, result) {
     if (err) {
       return return3(res)
     }
