@@ -24,7 +24,17 @@ CommentSchema.virtual('info').get(function() {
     avatar: this.avatar,
     content: this.content,
     ups: this.ups,
-    replies: this.replies
+    replies: this.replies,
+    created_at: this.createdAt,
+  }
+})
+CommentSchema.virtual('meta').get(function () {
+  return {
+    id: this._id,
+    name: this.name,
+    content: this.content,
+    avatar: this.avatar,
+    created_at: this.createdAt,
   }
 })
 CommentSchema.virtual('counts').get(function () {

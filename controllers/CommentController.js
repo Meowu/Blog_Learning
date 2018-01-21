@@ -34,13 +34,12 @@ exports.addComments = (req, res, next) => {
     name,
     email,
     site,
-    article,
     content,
     articleId,
     commentId
   } = body
-  if (!articleId && !commentId) {
-    return1('文章或者评论id不能为空！')
+  if (!articleId.trim()) {
+    return return1('文章 id 不能为空！')
   }
   name = escape(trim(name))
   email = escape(trim(email))
@@ -50,7 +49,6 @@ exports.addComments = (req, res, next) => {
   site = typeof site === 'string'
     ? escape(trim(site))
     : ''
-  articleId && (articleId = escape(trim(articleId)) || '')
   commentId && (commentId = escape(trim(commentId)) || '')
   content = trim(content)
   if (!name) {
@@ -69,7 +67,7 @@ exports.addComments = (req, res, next) => {
     }
   });
   marked(content, (err, contents) => {
-    err && return3(res)
+    if (err) return return3(res)
     const newComment = new Comment({
       name: name,
       email: email,
@@ -93,7 +91,7 @@ exports.addComments = (req, res, next) => {
             if (err) {
               return return3(res)
             }
-            return0({}, res)
+            return return0({}, res)
           })
       } else {
         return0({}, res)
@@ -105,17 +103,25 @@ exports.addComments = (req, res, next) => {
 // 后台获取筛选评论列表
 exports.findComments = (req, res, next) => {
   let conditions = {}
-  let { start_date, end_date, query, keyword } = req.query
-  if (query === 1) {
-    conditions = {name: keyword, createdAt: {$gte: start_date, $lte: end_date}}
-  } else if (query === 2) {
-    conditions = {content: keyword, createdAt: {$gte: start_date, $lte: end_date}}
-  }
-  Comment.find(conditions).populate('article', '_id name').exec(function (err, result) {
+  // let { start_date, end_date, query, keyword } = req.query
+  // if (query === 1) {
+  //   conditions = {name: keyword, createdAt: {$gte: start_date, $lte: end_date}}
+  // } else if (query === 2) {
+  //   conditions = {content: keyword, createdAt: {$gte: start_date, $lte: end_date}}
+  // }
+  // condition = {}
+  Comment.find(conditions).populate('article', '_id title').exec(function (err, result) {
     if (err) {
       return return3(res)
     }
-    return0(result, res)
+    const data = result.map(rs => {
+      const article = { id: rs.article._id, title: rs.article.title }
+      const meta = rs.meta
+      meta.article = article
+      return meta
+    })
+    return return0(data, res)
+    // return return0(result, res)
   })
   // const 
 }
@@ -150,8 +156,8 @@ exports.findOneComment = (req, res, next) => {
   } else if (req.method === 'DELETE') {
     // 评论及其回复。
     Comment
-      .findByIdAndRemove(id, function (err, result) {
-        err && return3(res)
+      .findByIdAndRemove(trim(id), function (err, result) {
+        if (err) return return3(res)
         if (!result) {
           return return1('id 不存在', res)
         } else {
