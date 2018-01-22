@@ -110,16 +110,24 @@ exports.findComments = (req, res, next) => {
     skip: (page - 1) * page_size,
     limit: page_size
   }
+  start_date && (start_date = new Date(Number(start_date))) // 查找参数是字符串，务必记得转化为数字再构建日期。
+  end_date && (end_date = new Date(Number(end_date)))
   if (Object.is(Number(query), 1)) {
-    conditions = { name: { $regex: keyword, $options: 'is' } }
-    // conditions = {name: keyword, createdAt: {$gte: start_date, $lte: end_date}}
+    if (start_date) {
+      conditions = {name: { $regex: keyword, $options: 'is' }, createdAt: {$gte: start_date, $lte: end_date}}
+    } else {
+      conditions = { name: { $regex: keyword, $options: 'is' } }
+    }
   } else if (Object.is(Number(query), 2)) {
     // $regex Provides regular expression capabilities for pattern matching strings in queries. 模糊查找，类似 sql 中的 like 。
-    conditions = { content: { $regex: keyword, $options: 'i'} }
-    // conditions = {content: keyword, createdAt: {$gte: start_date, $lte: end_date}}
+    if (start_date) {
+      conditions = {content: { $regex: keyword, $options: 'i' }, createdAt: {$gte: start_date, $lte: end_date}}
+    } else {
+      conditions = { content: { $regex: keyword, $options: 'i'} }
+    }
+  } else if (start_date && end_date) {
+    conditions = { createdAt: {$gte:start_date, $lte: end_date}}
   }
-  // condition = {}
-  console.log(conditions);
   Comment.find(conditions, null, options).populate('article', '_id title').exec(function (err, result) {
     if (err) {
       return return3(res)
