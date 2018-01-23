@@ -150,7 +150,7 @@ exports.selectArticle = (req, res, next) => {
   const method = req.method
   const id = req.params.id
   if (!id) {
-    return1('id不合法', res)
+    return return1('id不合法', res)
   }
   if (method === 'GET') {
     // get 请求时，判断是读取文章 html 还是获取 markdown 来编辑 const render = req.query.rendermd   ?
@@ -164,7 +164,7 @@ exports.selectArticle = (req, res, next) => {
               } else if (!result) {
                 return return1('id 不存在', res)
               }
-              return0(result, res)
+              return return0(result, res)
             })
   } else if (method === 'PUT') {
     const body = req.body
@@ -191,11 +191,11 @@ exports.selectArticle = (req, res, next) => {
       ? tags.split(',')
       : []
     if (!title) {
-      return1('标题不能为空', res)
+      return return1('标题不能为空', res)
     } else if (!path) {
-      return1('path 不能为空', res)
+      return return1('path 不能为空', res)
     } else if (!markdown) {
-      return1('内容不能为空', res)
+      return return1('内容不能为空', res)
     }
     // const
     marked.setOptions({
@@ -207,7 +207,7 @@ exports.selectArticle = (req, res, next) => {
     });
     marked(markdown, (err, content) => {
       if (err) {
-        return3(res)
+        return return3(res)
       }
       const newArticle = new Article({
         title: title,
@@ -221,16 +221,16 @@ exports.selectArticle = (req, res, next) => {
         _id: id
       })
       Article.findByIdAndUpdate(id, newArticle, function (err, result) {
-        err && return3(res)
-        return0({}, res)
+        if (err) return return3(res)
+        return return0({}, res)
       })
     })
   } else if (method === 'DELETE') {
     Article
       .findByIdAndRemove(id, function (err, result) {
-        err && return3(res) // 返回 result 是找到的文档
-        !result && return1('id 不存在', res)
-        return0({}, res)
+        if (err) return return3(res) // 返回 result 是找到的文档
+        if (!result) return return1('id 不存在', res)
+        return return0({}, res)
       })
   } else {
     res
