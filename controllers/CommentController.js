@@ -132,6 +132,7 @@ exports.findComments = (req, res, next) => {
     if (err) {
       return return3(res)
     }
+    console.log(result);
     const data = result.map(rs => {
       const article = { id: rs.article._id, title: rs.article.title }
       const meta = rs.meta

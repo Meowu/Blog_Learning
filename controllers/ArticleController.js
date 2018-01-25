@@ -230,6 +230,7 @@ exports.selectArticle = (req, res, next) => {
       .findByIdAndRemove(id, function (err, result) {
         if (err) return return3(res) // 返回 result 是找到的文档
         if (!result) return return1('id 不存在', res)
+        Comment.deleteMany({ article: id}).exec()
         return return0({}, res)
       })
   } else {
