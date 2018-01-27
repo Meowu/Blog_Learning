@@ -39,8 +39,8 @@ exports.addComments = (req, res, next) => {
     commentId
   } = body
   if (!articleId.trim()) {
-    return return1('文章 id 不能为空！')
-  }
+  //   return return1('文章 id 不能为空！')
+  // }
   name = escape(trim(name))
   email = escape(trim(email))
   avatar = typeof avatar === 'string'
@@ -52,11 +52,11 @@ exports.addComments = (req, res, next) => {
   commentId && (commentId = escape(trim(commentId)) || '')
   content = trim(content)
   if (!name) {
-    return1('姓名不能为空', res)
+    return return1('姓名不能为空', res)
   } else if (!email) {
-    return1('email 不能为空', res)
+    return return1('email 不能为空', res)
   } else if (!content) {
-    return1('内容不能为空', res)
+    return return1('内容不能为空', res)
   }
   // const
   marked.setOptions({
@@ -73,12 +73,15 @@ exports.addComments = (req, res, next) => {
       email: email,
       avatar: avatar,
       site: site,
-      article: articleId,
+      // article: articleId,
       content: contents,
       // html_string: contents
     })
+    if (commentId) {
+      newComment.commentId = commentId
+    }
     newComment.save(function (err, result) {
-      err && return3(res)
+      if (err) return return3(res)
       // 如果提交了评论 id 则是对某条评论的回复，否则是对文章的评论
       if (commentId) {
         // { $push: { <filed1>: <value1>, ...}} 如果 field1 不存在将会创建一个 field1 字段，其值是包含 value1 的数组。
@@ -90,7 +93,10 @@ exports.addComments = (req, res, next) => {
           }, function (err, result) { // 必须指定 options: { new: true } result才会返回更新后的文档。
             if (err) {
               return return3(res)
+            } else if (!result) {
+              return return1('id 不存在', res)
             }
+            
             return return0({}, res)
           })
       } else {
