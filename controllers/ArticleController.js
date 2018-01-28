@@ -263,7 +263,7 @@ exports.getOneArticle = (req, res, next) => {
   // const method = req.method
   const id = req.params.id
   if (!id) {
-    return1('id不合法', res)
+    return return1('请输入 id', res)
   }
   async
     .parallel({
@@ -287,7 +287,6 @@ exports.getOneArticle = (req, res, next) => {
         return return1('id 不存在', res)
       }
       const articleContent = result.article
-      console.log(result);
       articleContent.page_views++;
 
       Article.findByIdAndUpdate(id, {
@@ -300,6 +299,6 @@ exports.getOneArticle = (req, res, next) => {
           throw Error(e)
         })
       articleContent.comments = result.comments
-      return0(articleContent, res)
+      return return0(articleContent, res)
     })
 }
