@@ -9,13 +9,14 @@ const CommentSchema = new Schema({
   avatar: String,
   article: {type: Schema.Types.ObjectId, ref: 'Article'},
   content: {type: String, required: true, min: 10, max: 1000},
-  // html_string: String,
+  reply_to: {type: Schema.Types.ObjectId, ref: 'Comment'},
   ups: {type: Number, default: 0},
   replies: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
   options: Schema.Types.Mixed
 }, {timestamps: true})
 
 // Only non-virtual properties work as part of queries and for field selection. Since virtuals are not stored in MongoDB, you can't query with them.
+// 前端展示
 CommentSchema.virtual('info').get(function() {
   return {
     id: this._id,
@@ -28,6 +29,8 @@ CommentSchema.virtual('info').get(function() {
     created_at: this.createdAt,
   }
 })
+
+// 后台展示
 CommentSchema.virtual('meta').get(function () {
   return {
     id: this._id,

@@ -6,6 +6,7 @@ const marked = require('marked')
 const {return0, return1, return2, return3} = require('./_response')
 
 // 前端 api 
+
 // 用户点赞评论
 exports.upComments = (req, res, next) => {
   const id = req.params.id
@@ -35,21 +36,20 @@ exports.addComments = (req, res, next) => {
     email,
     site,
     content,
+    avatar,
     articleId,
     commentId
   } = body
-  if (!articleId.trim()) {
-  //   return return1('文章 id 不能为空！')
-  // }
+  if (!articleId && !commentId) {
+    return return1('id 不能为空！', res)
+  }
   name = escape(trim(name))
   email = escape(trim(email))
-  avatar = typeof avatar === 'string'
-    ? escape(trim(avatar))
-    : ''
-  site = typeof site === 'string'
-    ? escape(trim(site))
-    : ''
+  avatar = trim(avatar) || ''
+  console.log(avatar);
+  site = escape(trim(site)) || ''
   commentId && (commentId = escape(trim(commentId)) || '')
+  articleId && (articleId = escape(trim(articleId)) || '')
   content = trim(content)
   if (!name) {
     return return1('姓名不能为空', res)
@@ -64,7 +64,8 @@ exports.addComments = (req, res, next) => {
       return require('highlight.js')
         .highlightAuto(code)
         .value;
-    }
+    },
+    gfm: true
   });
   marked(content, (err, contents) => {
     if (err) return return3(res)
@@ -75,10 +76,11 @@ exports.addComments = (req, res, next) => {
       site: site,
       // article: articleId,
       content: contents,
-      // html_string: contents
     })
     if (commentId) {
-      newComment.commentId = commentId
+      newComment.set('reply_to', commentId)
+    } else {
+      newComment.set('article', articleId)
     }
     newComment.save(function (err, result) {
       if (err) return return3(res)
@@ -96,7 +98,6 @@ exports.addComments = (req, res, next) => {
             } else if (!result) {
               return return1('id 不存在', res)
             }
-            
             return return0({}, res)
           })
       } else {
@@ -134,15 +135,21 @@ exports.findComments = (req, res, next) => {
   } else if (start_date && end_date) {
     conditions = { createdAt: {$gte:start_date, $lte: end_date}}
   }
-  Comment.find(conditions, null, options).populate('article', '_id title').exec(function (err, result) {
+  Comment.find(conditions, null, options).populate('article', '_id title').populate('reply_to', '_id name').exec(function (err, result) {
     if (err) {
       return return3(res)
     }
     console.log(result);
     const data = result.map(rs => {
-      const article = { id: rs.article._id, title: rs.article.title }
+      let reply_to
+      if (rs.article) {
+        reply_to = { id: rs.article._id, name: rs.article.title }
+      } else {
+        // reply_to = { id: rs.reply_to._id, name: rs.reply_to.name}
+        reply_to = { id: null, name: '匿名' }
+      }
       const meta = rs.meta
-      meta.article = article
+      meta.reply_to = reply_to
       return meta
     })
     return return0(data, res)
