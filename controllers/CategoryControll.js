@@ -107,10 +107,27 @@ exports.getCategories = (req, res, next) => {
     .find({}, '_id name', function (err, result) {
       if (err) 
         return return3(res)
-      return return0(result, res)
+      const data = result.map(({_id, name}) => ({id: _id, name: name}))
+      return return0(data, res)
     })
-}
-
-exports.getCategoryArticles = (req, res, next) => {
-  const id = escape(trim(req.params.id))
+  }
+  
+  exports.getCategoryArticles = (req, res, next) => {
+    const id = escape(trim(req.params.id))
+  }
+  
+  exports.getFrontCategories = (reqq, res, next) => {
+    let data
+    Category
+      .find({}, '_id name', function (err, result) {
+        if (err) 
+          return return3(res)
+        // 获取分类后再并行获取分类下面的文章数
+        const funcs = result.map(cate => cb => Article.count({category: cate._id}).exec(cb))
+        async.parallel(funcs, function(err, nums) {
+          data = result.map(({_id, name}, index) => ({id: _id, name: name, counts: nums[index]}))
+          return return0(data, res)
+        })
+      })
+  // const 
 }

@@ -1,11 +1,12 @@
 
 const router = require('express').Router()
 
-const { addCategory, getCategories, getCategoryArticles, handleOneCategory } = require('../controllers/CategoryControll')
+const { addCategory, getCategories, getCategoryArticles, handleOneCategory, getFrontCategories } = require('../controllers/CategoryControll')
 
 router.post('/new', addCategory)
-router.get('/', getCategories)
 router.all('/:id', handleOneCategory)
 router.get('/:id/articles', getCategoryArticles)
+// router.get('/')
 
+router.get('/', getFrontCategories)
 module.exports = router
