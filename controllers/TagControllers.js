@@ -7,7 +7,8 @@ exports.getTags = (req, res, next) => {
     // const data = result.toJSON({virtuals: true})
     if (err) 
       return next(err)
-    return0(result, res)
+    const data = result.map(rs => ({id: rs._id, name: rs.name}))
+    return return0(data, res)
   })
 }
 
@@ -15,11 +16,10 @@ exports.changeTag = (req, res, next) => {
   let id = req.params.id
   id = trim(id)
   if (!id) {
-    return1('id不能为空', res)
+    return return1('id不能为空', res)
   }
   switch (req.method) {
     case 'GET':
-    console.log(id);
       Tag
         .findOne({_id: id})
         .populate('articles')
