@@ -43,7 +43,7 @@ exports.getArticles = (req, res, next) => {
         if (err) 
           return return3(res)
         const data = result.map(article => article.info)
-        return0(data, res)
+        return return0(data, res)
       })
   } else if (category) {
     category = escape(trim(category))
@@ -61,7 +61,7 @@ exports.getArticles = (req, res, next) => {
         if (err) 
           return return3(res)
         const data = result.map(article => article.info)
-        return0(data, res)
+        return return0(data, res)
       })
   } else { // The second params is projection object.
     Article.find({}, projection, {
@@ -80,7 +80,6 @@ exports.getArticles = (req, res, next) => {
 }
 
 exports.addArticles = (req, res, next) => {
-  console.log(req.body);
   const body = req.body
   let {
     title,
@@ -123,7 +122,6 @@ exports.addArticles = (req, res, next) => {
     if (err) {
       return return3(res)
     }
-    console.log(content);
     const newArticle = new Article({
       title: title,
       path: path,
@@ -134,10 +132,8 @@ exports.addArticles = (req, res, next) => {
     })
     summary && (newArticle.summary = summary)
     cover && (newArticle.cover = cover)
-    console.log(newArticle);
     newArticle.save(function (err) {
       if (err) {
-        console.log(err);
         return return3(res)
       }
       return return0({}, res)
@@ -243,8 +239,9 @@ exports.selectArticle = (req, res, next) => {
 // 前端 api 用户点赞文章
 exports.likeArticles = (req, res, next) => {
   const id = req.params.id
+  console.log(id);
   if (!trim(id)) {
-    return1('id 不能为空', res)
+    return return1('id 不能为空', res)
   } else {
     Article
       .findByIdAndUpdate(escape(id), {
@@ -252,8 +249,8 @@ exports.likeArticles = (req, res, next) => {
           likes: 1
         }
       }, function (err, result) {
-        err && return3(res)
-        return0({}, res)
+        if (err) return return3(res)
+        return return0({}, res)
       })
   }
 }
@@ -262,6 +259,7 @@ exports.likeArticles = (req, res, next) => {
 exports.getOneArticle = (req, res, next) => {
   // const method = req.method
   const id = req.params.id
+  console.log(id);
   if (!id) {
     return return1('请输入 id', res)
   }
@@ -286,6 +284,7 @@ exports.getOneArticle = (req, res, next) => {
       if (!result.article) {
         return return1('id 不存在', res)
       }
+      console.log(result);
       const articleContent = result.article
       articleContent.page_views++;
 
@@ -299,6 +298,7 @@ exports.getOneArticle = (req, res, next) => {
           throw Error(e)
         })
       articleContent.comments = result.comments
+      console.log(articleContent);
       return return0(articleContent, res)
     })
 }

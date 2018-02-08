@@ -11,7 +11,7 @@ const {return0, return1, return2, return3} = require('./_response')
 exports.upComments = (req, res, next) => {
   const id = req.params.id
   if (!trim(id)) {
-    return1('id 不能为空。', res)
+    return return1('id 不能为空。', res)
   }
   Comment
     .findByIdAndUpdate(id, {
@@ -24,7 +24,7 @@ exports.upComments = (req, res, next) => {
       } else if (!result) {
         return return1('id 不存在', res)
       }
-      return0({}, res)
+      return return0({}, res)
     })
 }
 
@@ -46,7 +46,6 @@ exports.addComments = (req, res, next) => {
   name = escape(trim(name))
   email = escape(trim(email))
   avatar = trim(avatar) || ''
-  console.log(avatar);
   site = escape(trim(site)) || ''
   commentId && (commentId = escape(trim(commentId)) || '')
   articleId && (articleId = escape(trim(articleId)) || '')
@@ -101,7 +100,7 @@ exports.addComments = (req, res, next) => {
             return return0({}, res)
           })
       } else {
-        return0({}, res)
+        return return0({}, res)
       }
     })
   })
@@ -139,7 +138,6 @@ exports.findComments = (req, res, next) => {
     if (err) {
       return return3(res)
     }
-    console.log(result);
     const data = result.map(rs => {
       let reply_to
       if (rs.article) {
