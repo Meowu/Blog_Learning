@@ -100,7 +100,18 @@ exports.addComments = (req, res, next) => {
             return return0({}, res)
           })
       } else {
-        return return0({}, res)
+        Article.findByIdAndUpdate(articleId, {
+          $push: {
+            comments: result._id
+          }
+        }, function(err, result) {
+          if (err) { 
+            return return3(res)
+          } else if (!result) {
+            return return1('文章不存在', res)
+          }
+          return return0({}, res)
+        }) 
       }
     })
   })
