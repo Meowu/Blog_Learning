@@ -4,6 +4,7 @@ const { addComments, findComments, upComments, findOneComment } = require('../co
 
 // 前台新增评论或者点赞评论
 router.post('/new', addComments)
+router.post('/new', addComments)
 router.put('/:id', upComments)
 
 // 后台获取评论、删除评论

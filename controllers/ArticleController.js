@@ -255,6 +255,71 @@ exports.likeArticles = (req, res, next) => {
   }
 }
 
+// 评论文章
+exports.postComments = (req, res, next) => {
+  const id = req.params.id 
+  if (!id.trim()) {
+    return return1('id 不能为空', res)
+  }
+  const body = req.body
+  let {
+    name,
+    email,
+    site,
+    content,
+    avatar,
+  } = body
+
+  if (!name.trim()) {
+    return return1('姓名不能为空', res)
+  } else if (!email.trim()) {
+    return return1('email 不能为空', res)
+  } else if (!content.trim()) {
+    return return1('内容不能为空', res)
+  }
+  name = escape(trim(name))
+  email = escape(trim(email))
+  avatar = trim(avatar) || ''
+  site = escape(trim(site)) || ''
+  content = trim(content)
+  // const
+  marked.setOptions({
+    highlight: function (code) {
+      return require('highlight.js')
+        .highlightAuto(code)
+        .value;
+    },
+    gfm: true
+  });
+  marked(content, (err, contents) => {
+    if (err) return return3(res)
+    const newComment = new Comment({
+      name: name,
+      email: email,
+      avatar: avatar,
+      site: site,
+      article: id,
+      content: contents,
+    })
+    newComment.save(function (err, result) {
+      if (err) return return3(res)
+        // { $push: { <filed1>: <value1>, ...}} 如果 field1 不存在将会创建一个 field1 字段，其值是包含 value1 的数组。
+        Article.findByIdAndUpdate(id, {
+          $push: {
+            comments: result._id
+          }
+        }, function(err, result) {
+          if (err) { 
+            return return3(res)
+          } else if (!result) {
+            return return1('文章 id 不存在', res)
+          }
+          return return0({}, res)
+        }) 
+    })
+  })
+}
+
 // 获取某篇文章详情
 exports.getOneArticle = (req, res, next) => {
   // const method = req.method
