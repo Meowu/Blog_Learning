@@ -48,7 +48,7 @@ exports.addComments = (req, res, next) => {
   }
   name = escape(trim(name));
   email = escape(trim(email));
-  avatar = trim(avatar) || "";
+  avatar = avatar || "";
   site = escape(trim(site)) || "";
   content = trim(content);
   // const
@@ -59,6 +59,7 @@ exports.addComments = (req, res, next) => {
     gfm: true
   });
   marked(content, (err, contents) => {
+    console.log('marked.')
     if (err) return return3(res);
     const newComment = new Comment({
       name: name,

@@ -279,7 +279,7 @@ exports.postComments = (req, res, next) => {
   }
   name = escape(trim(name))
   email = escape(trim(email))
-  avatar = trim(avatar) || ''
+  avatar = avatar || ''
   site = escape(trim(site)) || ''
   content = trim(content)
   // const
@@ -291,7 +291,9 @@ exports.postComments = (req, res, next) => {
     },
     gfm: true
   });
+  console.log('set...')
   marked(content, (err, contents) => {
+    console.log('marked.')
     if (err) return return3(res)
     const newComment = new Comment({
       name: name,
@@ -302,6 +304,7 @@ exports.postComments = (req, res, next) => {
       content: contents,
     })
     newComment.save(function (err, result) {
+      console.log('save...')
       if (err) return return3(res)
         // { $push: { <filed1>: <value1>, ...}} 如果 field1 不存在将会创建一个 field1 字段，其值是包含 value1 的数组。
         Article.findByIdAndUpdate(id, {
