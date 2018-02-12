@@ -7,6 +7,7 @@ const CommentSchema = new Schema({
   email: {type: String, required: true},
   site: String,
   avatar: String,
+  is_admin: { type: Boolean, default: false},
   article: {type: Schema.Types.ObjectId, ref: 'Article'},
   content: {type: String, required: true, min: 10, max: 1000},
   reply_to: {type: Schema.Types.ObjectId, ref: 'Comment'},

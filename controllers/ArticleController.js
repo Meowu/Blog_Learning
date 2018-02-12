@@ -258,7 +258,7 @@ exports.likeArticles = (req, res, next) => {
 // 评论文章
 exports.postComments = (req, res, next) => {
   const id = req.params.id 
-  if (!id.trim()) {
+  if (!id) {
     return return1('id 不能为空', res)
   }
   const body = req.body
