@@ -17,6 +17,20 @@ const {
   normalizeEmail
 } = require('validator')
 
+
+exports.getArchives = (req, res, next) => {
+  let {page, page_size} = req.query
+  page = Number(page) || 1
+  page_size = Number(page_size) || 10
+  const projection = '-markdown -html_string'
+  console.log('aggregate...')
+  Article.aggregate([{$group: {_id: {year: {$year: '$createdAt'}}, articles: {$push: {id: '$_id', title: '$title', created_at: '$createdAt'}}}}]).sort('-created_at').exec(function (err, result) {
+    if (err) return return3(res)
+    console.log(result);
+    return return0(result, res)
+  })
+}
+
 exports.getArticles = (req, res, next) => {
   let {page, page_size, tag, category, rendermd} = req.query
   page = Number(page) || 1
