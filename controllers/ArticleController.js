@@ -33,18 +33,19 @@ exports.getArticles = (req, res, next) => {
       tags: {
         $in: [tag]
       }
-    }, projection, {
+    }, projection, {  // options
       skip: (page - 1) * page_size,
-        limit: page_size
-      })
-      // .populate('category', '_id name')
-      // .populate('tags', '_id name')
-      .exec(function (err, result) {
-        if (err) 
-          return return3(res)
-        const data = result.map(article => article.info)
-        return return0(data, res)
-      })
+      limit: page_size,
+      sort: {createdAt: 'desc'},
+    })
+    // .populate('category', '_id name')
+    // .populate('tags', '_id name')
+    .exec(function (err, result) {
+      if (err)
+      return return3(res)
+      const data = result.map(article => article.info)
+      return return0(data, res)
+    })
   } else if (category) {
     category = escape(trim(category))
 
@@ -53,25 +54,27 @@ exports.getArticles = (req, res, next) => {
       category: category
     }, projection, {
       skip: (page - 1) * page_size,
-        limit: page_size
-      })
-      .populate('category', '_id name')
-      .populate('tags', '_id name')
-      .exec(function (err, result) {
-        if (err) 
-          return return3(res)
-        const data = result.map(article => article.info)
-        return return0(data, res)
-      })
+      limit: page_size,
+      sort: {createdAt: 'desc'},
+    })
+    .populate('category', '_id name')
+    .populate('tags', '_id name')
+    .exec(function (err, result) {
+      if (err)
+      return return3(res)
+      const data = result.map(article => article.info)
+      return return0(data, res)
+    })
   } else { // The second params is projection object.
     Article.find({}, projection, {
       skip: (page - 1) * page_size,
-        limit: page_size
+      limit: page_size,
+      sort: {createdAt: 'desc'},
       })
       .populate('category', '_id name')
       .populate('tags', '_id name')
       .exec(function (err, result) {
-        if (err) 
+        if (err)
           return return3(res) // 查找文章的时候获取其标签和分类。
         const data = result.map(article => article.info)
         return return0(data, res)
@@ -257,7 +260,7 @@ exports.likeArticles = (req, res, next) => {
 
 // 评论文章
 exports.postComments = (req, res, next) => {
-  const id = req.params.id 
+  const id = req.params.id
   if (!id) {
     return return1('id 不能为空', res)
   }
@@ -304,7 +307,6 @@ exports.postComments = (req, res, next) => {
       content: contents,
     })
     newComment.save(function (err, result) {
-      console.log('save...')
       if (err) return return3(res)
         // { $push: { <filed1>: <value1>, ...}} 如果 field1 不存在将会创建一个 field1 字段，其值是包含 value1 的数组。
         Article.findByIdAndUpdate(id, {
@@ -312,13 +314,13 @@ exports.postComments = (req, res, next) => {
             comments: result._id
           }
         }, function(err, result) {
-          if (err) { 
+          if (err) {
             return return3(res)
           } else if (!result) {
             return return1('文章 id 不存在', res)
           }
           return return0({}, res)
-        }) 
+        })
     })
   })
 }
