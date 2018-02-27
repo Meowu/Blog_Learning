@@ -9,6 +9,7 @@ const cors = require('cors')
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+const token = require('./routes/Token');
 const admin = require('./routes/AdminRouter')
 const tag = require('./routes/TagRouter')
 const article = require('./routes/ArticleRouter')
@@ -56,7 +57,8 @@ app.use(stylus.middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', users);
+app.use('/users', users); 
+app.use('/api/v1/token',token)
 app.use('/api/v1/', admin)
 app.use('/api/v1/tags', tag)
 app.use('/api/v1/articles', article)

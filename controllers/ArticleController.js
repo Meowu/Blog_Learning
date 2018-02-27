@@ -113,7 +113,7 @@ exports.addArticles = (req, res, next) => {
     ? escape(trim(summary))
     : ''
   cover = typeof cover === 'string'
-    ? escape(trim(cover))
+    ? trim(cover)
     : ''
   category && (category = escape(trim(category)))
   markdown = trim(markdown)
@@ -139,6 +139,7 @@ exports.addArticles = (req, res, next) => {
     if (err) {
       return return3(res)
     }
+    console.log('marked err.');
     const newArticle = new Article({
       title: title,
       path: path,
@@ -150,6 +151,8 @@ exports.addArticles = (req, res, next) => {
     summary && (newArticle.summary = summary)
     cover && (newArticle.cover = cover)
     newArticle.save(function (err) {
+      console.log('saved err.');
+      console.log(err);
       if (err) {
         return return3(res)
       }
@@ -196,7 +199,7 @@ exports.selectArticle = (req, res, next) => {
       ? escape(trim(summary))
       : ''
     cover = typeof cover === 'string'
-      ? escape(trim(cover))
+      ? trim(cover)
       : ''
     category && (category = escape(trim(category)))
     markdown = trim(markdown)
