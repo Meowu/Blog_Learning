@@ -1,4 +1,6 @@
 const Admin = require('../models/Admin')
+const jwt = require('jsonwebtoken')
+const app = require('express')()
 const {
   isEmpty,
   trim,
@@ -21,17 +23,32 @@ exports.login = (req, res, next) => {
   console.log(email, password);
   Admin.findOne({
     email: normalizeEmail(email)
-  }, (err, data) => { // selecting username and email fields.
+  }, '-_id -__v', (err, data) => { // selecting username and email fields.
     if (err) { // todo: query by email or username
-      return3(res)
+      return return3(res)
     }
     if (!data) {
-      return1('用户不存在', res)
+      return return1('用户不存在', res)
     } else {
+      console.log(data);
       if (!equals(password, data.password)) {
-        return1('密码错误', res)
+        return return1('密码错误', res)
       } else {
-        return return0(data, res)
+        const payload = {
+          admin: data.email
+        }
+        const token = jwt.sign(payload, 'Meowu', {
+          expiresIn: 60*60*3
+        })
+        console.log(token);
+        const user = {
+          created_at: data.createdAt,
+          updated_at: data.updatedAt,
+          username: data.username,
+          token: token,
+          email: data.email
+        }
+        return return0(user, res)
       }
     }
   })

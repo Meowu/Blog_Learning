@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var stylus = require('stylus');
+const config = require('./controllers/config')
 const cors = require('cors')
 
 var index = require('./routes/index');
@@ -16,7 +17,7 @@ const article = require('./routes/ArticleRouter')
 const category = require('./routes/CategoryRouter')
 const comment = require('./routes/CommentRouter')
 
-var app = express();
+const app = express();
 const mongoose = require('mongoose')
 const mongoDB = 'mongodb://127.0.0.1:27017/blog'
 mongoose.connect(mongoDB, {
@@ -28,6 +29,7 @@ db.on('error', console.error.bind(console, 'MongoDB connet error.'))
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+app.set('superSecrect', config.secrect)
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
