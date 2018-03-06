@@ -1,10 +1,11 @@
 const router = require('express').Router()
 
+const { auth } = require('../controllers/Auth')
 const { addArticles, getArticles, selectArticle, likeArticles, getOneArticle, postComments, getArchives } = require('../controllers/ArticleController')
 // cms
-router.post('/new', addArticles)
+router.post('/new', auth, addArticles)
 router.get('/', getArticles)
-router.all('/cms/:id', selectArticle)
+router.all('/cms/:id', auth, selectArticle)
 
 // front
 router.get('/archives', getArchives)

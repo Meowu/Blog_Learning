@@ -2,8 +2,10 @@ const jwt = require('jsonwebtoken')
 exports.auth = (req, res, next) => {
   const token = req.body.token || req.query.token || req.headers['x-access-token']
 
+  console.log(token);
   if (token) {
     jwt.verify(token, 'Meowu', function(err, decoded) {
+      console.log(decoded);
       if (err) {
         return res.status(200).json({code: 1, message: 'Authenticate Error'})
       } else {

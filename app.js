@@ -62,12 +62,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use(auth)
 app.use('/', index);
 app.use('/users', auth, users); 
-app.use('/api/v1/token', auth, token)
+app.use('/api/v1/token', token)
 app.use('/api/v1/', admin)
-app.use('/api/v1/tags', auth, tag)
-app.use('/api/v1/articles', auth, article)
-app.use('/api/v1/categories', auth, category)
-app.use('/api/v1/comments', auth, comment)
+app.use('/api/v1/tags', tag)
+app.use('/api/v1/articles', article)
+app.use('/api/v1/categories', category)
+app.use('/api/v1/comments', comment)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

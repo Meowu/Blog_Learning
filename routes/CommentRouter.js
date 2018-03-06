@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const { auth } = require('../controllers/Auth')
 
 const { addComments, findComments, upComments, findOneComment } = require('../controllers/CommentController')
 
@@ -7,7 +8,7 @@ router.post('/:id', addComments)
 router.put('/:id', upComments)
 
 // 后台获取评论、删除评论
-router.get('/cms/all', findComments)
-router.all('/cms/:id', findOneComment)
+router.get('/cms/all', auth, findComments)
+router.all('/cms/:id', auth, findOneComment)
 
 module.exports = router
