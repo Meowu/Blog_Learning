@@ -169,9 +169,6 @@ exports.findOneComment = (req, res, next) => {
         } else if (!result) {
           return return1("id 不存在", res);
         }
-        // console.log(result.replies[0].info)
-        // console.log(result.replies.map(reply => reply.info));
-        // console.log(result.info.replies);
         const data = result.info;
         data.replies = result.replies.map(reply => reply.info);
         // result.info.replies = result.replies.map(reply => reply.info) // populate 是获取不到 virtuals 的？

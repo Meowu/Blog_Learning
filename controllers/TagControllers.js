@@ -4,7 +4,6 @@ const { return0, return1, return2, return3 } = require('./_response')
 
 exports.getTags = (req, res, next) => {
   Tag.find({}, '_id name', (err, result) => {
-    // const data = result.toJSON({virtuals: true})
     if (err) 
       return next(err)
     const data = result.map(rs => ({id: rs._id, name: rs.name}))
